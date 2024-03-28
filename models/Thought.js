@@ -1,7 +1,35 @@
 // Requires the schema and model information from the mongoose package
 const { Schema, model } = require('mongoose');
-const reactionSchema = require('./Reaction');
 const moment = require('moment');
+
+// Schema to create a Reaction
+const reactionSchema = new Schema(
+    {
+      reactionId: {
+          type: Schema.Types.ObjectId,
+          default: () => new Types.ObjectId,
+      },
+      reactionBody: {
+          type: String,
+          required: true,
+          maxlength: 280,
+      },
+      username: {
+          type: String,
+          required: true,
+      },
+      createdAt: {
+          type: Date,
+          default: Date.now,
+          get: createdAtMoment => moment(createdAtMoment).format("MMMM Do YYYY, h:mm:ss a"),
+      },
+    },
+    {
+      toJSON: {
+          getters: true,
+      },
+    }
+);
 
 // Schema to create a Thought model
 const thoughtSchema = new Schema(
@@ -31,12 +59,12 @@ const thoughtSchema = new Schema(
   }
 );
 
-// Creates a virtual called friendCount that includes how many friends the user has
+// Creates a virtual called reactionCount that includes how many reactions this thought has
 thoughtSchema.virtual('reactionCount').get(function () {
     return this.reactions.length;
 });
 
-// Converts our user schema into a model
+// Converts our thought schema into a model
 const Thought = model('thought', thoughtSchema);
 
 module.exports = Thought;
