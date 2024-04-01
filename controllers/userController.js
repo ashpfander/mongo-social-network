@@ -11,7 +11,7 @@ module.exports = {
   // Get all users
   async getUsers(req, res) {
     try {
-      const users = await User.find();
+      const users = await User.find().populate('thoughts');
 
       const allUsers = {
         users,
@@ -27,7 +27,7 @@ module.exports = {
   // Get a single user
   async getSingleUser(req, res) {
     try {
-      const user = await User.findOne({ _id: req.params.userId }).select('-__v');
+      const user = await User.findOne({ _id: req.params.userId }).populate('thoughts').select('-__v');
 
       if (!user) {
         return res.status(404).json({ message: 'No user with associated ID' })
@@ -61,7 +61,7 @@ module.exports = {
         res.status(404).json({ message: 'No user with associated ID' });
       }
 
-      res.json(course);
+      res.json(user);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -76,8 +76,8 @@ module.exports = {
       }
 
       const thought = await Thought.findOneAndUpdate(
-        { username: req.params.userId },
-        { $pull: { username: req.params.userId } },
+        { username },
+        { $pull: { username } },
         { new: true }
       );
 
