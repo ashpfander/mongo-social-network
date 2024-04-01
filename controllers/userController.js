@@ -69,15 +69,15 @@ module.exports = {
   // Delete a user and thoughts associated with the selected user
   async deleteUser(req, res) {
     try {
-      const user = await User.findOneAndRemove({ _id: req.params.userId });
+      const user = await User.findOneAndDelete({ _id: req.params.userId });
 
       if (!user) {
         return res.status(404).json({ message: 'This user does not exist' });
       }
 
       const thought = await Thought.findOneAndUpdate(
-        { username },
-        { $pull: { username } },
+        { username: req.params.username },
+        { $pull: { username: req.params.username } },
         { new: true }
       );
 
@@ -120,7 +120,7 @@ module.exports = {
     try {
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        { $pull: { friends: { userId: req.params.userId } } },
+        { $pull: { friends: req.params.friendId } },
         { runValidators: true, new: true }
       );
 
@@ -128,7 +128,7 @@ module.exports = {
         return res.status(404).json({ message: 'No user associated with that ID' });
       }
 
-      res.json(student);
+      res.json({ message: 'Friend successfully removed. :(' });
     } catch (err) {
       res.status(500).json(err);
     }
