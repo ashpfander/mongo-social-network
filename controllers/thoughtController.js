@@ -4,7 +4,7 @@ module.exports = {
   // Get all thoughts
   async getThoughts(req, res) {
     try {
-      const thoughts = await Thought.find().select('-__v');
+      const thoughts = await Thought.find().select('-__v').populate('reactions');
       res.json(thoughts);
     } catch (err) {
       res.status(500).json(err);
@@ -13,7 +13,7 @@ module.exports = {
   // Get a single thought
   async getSingleThought(req, res) {
     try {
-      const thought = await Thought.findOne({ _id: req.params.thoughtId }).select('-__v');
+      const thought = await Thought.findOne({ _id: req.params.thoughtId }).select('-__v').populate('reactions');
 
       if (!thought) {
         return res.status(404).json({ message: 'No thought with associated ID' });
@@ -88,9 +88,9 @@ module.exports = {
     // Create a reaction
     async createReaction(req, res) {
         try {
-          const reaction = await Thought.create(req.body).findOneAndUpdate(
-            { _id: req.body.thoughtId },
-            { $addToSet: { reactions: reaction._id } },
+          const reaction = await Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId },
+            { $addToSet: { reactions: req.body } },
             { new: true }
           );
           res.json(reaction);
@@ -101,20 +101,16 @@ module.exports = {
     },
     // Delete a reaction
     async removeReaction(req, res) {
-    try {
-      const reaction = await Thought.findOneAndDelete({ _id: req.params.reactionId }).findOneAndUpdate(
-        { _id: req.params.thoughtId },
-        { $pull: { reactions: { reactionId: reactionId }}},
-        { runValidators: true, new: true }
-      );
-
-      if (!reaction) {
-        res.status(404).json({ message: 'No reaction with associated ID' });
+      try {
+        const reaction = await Thought.findOneAndDelete({ _id: req.params.reactionId });
+  
+        if (!reaction) {
+          return res.status(404).json({ message: 'No reaction with associated ID' });
+        }
+  
+        return res.json({ message: 'Reaction has been deleted!' });
+      } catch (err) {
+        return res.status(500).json(err);
       }
-
-      res.json({ message: 'Reaction has been deleted!' });
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  },
+    },
 };
