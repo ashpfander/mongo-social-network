@@ -28,6 +28,7 @@ const reactionSchema = new Schema(
       toJSON: {
           getters: true,
       },
+      id: false,
     }
 );
 
@@ -56,6 +57,7 @@ const thoughtSchema = new Schema(
         getters: true,
         virtuals: true,
     },
+    id: false,
   }
 );
 

@@ -4,7 +4,7 @@ module.exports = {
   // Get all thoughts
   async getThoughts(req, res) {
     try {
-      const thoughts = await Thought.find();
+      const thoughts = await Thought.find().select('-__v');
       res.json(thoughts);
     } catch (err) {
       res.status(500).json(err);
@@ -13,7 +13,7 @@ module.exports = {
   // Get a single thought
   async getSingleThought(req, res) {
     try {
-      const thought = await Thought.findOne({ _id: req.params.thoughtId });
+      const thought = await Thought.findOne({ _id: req.params.thoughtId }).select('-__v');
 
       if (!thought) {
         return res.status(404).json({ message: 'No thought with associated ID' });
@@ -29,11 +29,23 @@ module.exports = {
     try {
       const thought = await Thought.create(req.body);
 
-      await User.findOneAndUpdate(
-        { username },
-        { $addToSet: { thoughts: thought._id } },
-        { new: true }
-      );
+      try {
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $addToSet: { thoughts: thought._id } },
+          { new: true }
+        );
+      
+        if (!updatedUser) {
+          console.log('User not found');
+          // Handle the case where the user is not found
+        } else {
+          console.log(updatedUser);
+        }
+      } catch (error) {
+        console.error(error);
+        // Handle the error appropriately
+      }
 
       res.json(thought);
     } catch (err) {

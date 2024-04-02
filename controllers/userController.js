@@ -11,7 +11,7 @@ module.exports = {
   // Get all users
   async getUsers(req, res) {
     try {
-      const users = await User.find().select('-__v');
+      const users = await User.find().select('-__v').populate('thoughts');
 
       const allUsers = {
         users,
@@ -27,13 +27,13 @@ module.exports = {
   // Get a single user
   async getSingleUser(req, res) {
     try {
-      const user = await User.findOne({ _id: req.params.userId }).select('-__v');
+      const user = await User.findOne({ _id: req.params.userId }).select('-__v').populate('thoughts');
 
       if (!user) {
         return res.status(404).json({ message: 'No user with associated ID' })
       }
 
-      res.json({ user });
+      res.json(user);
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
