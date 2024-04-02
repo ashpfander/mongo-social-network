@@ -76,8 +76,8 @@ module.exports = {
       }
 
       const thought = await Thought.findOneAndUpdate(
-        { username: req.params.username },
-        { $pull: { username: req.params.username } },
+        { _id: req.body.thoughtId },
+        { $set: { username: null } },
         { new: true }
       );
 

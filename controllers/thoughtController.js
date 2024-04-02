@@ -89,8 +89,8 @@ module.exports = {
     async createReaction(req, res) {
         try {
           const reaction = await Thought.create(req.body).findOneAndUpdate(
-            { _id: req.params.thoughtId },
-            { $addToSet: { reactions: reactionId } },
+            { _id: req.body.thoughtId },
+            { $addToSet: { reactions: reaction._id } },
             { new: true }
           );
           res.json(reaction);
