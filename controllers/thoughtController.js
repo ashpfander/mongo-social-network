@@ -102,7 +102,11 @@ module.exports = {
     // Delete a reaction
     async removeReaction(req, res) {
       try {
-        const reaction = await Thought.findOneAndDelete({ _id: req.params.reactionId });
+        const reaction = await Thought.findOneAndUpdate(
+          { _id: req.params.thoughtId },
+          { $pull: { reactions: { _id: req.params.reactionId } } },
+          { new: true }
+        );
   
         if (!reaction) {
           return res.status(404).json({ message: 'No reaction with associated ID' });
