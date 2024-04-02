@@ -28,7 +28,7 @@ THEN I am able to successfully create and delete reactions to thoughts and add a
 ```
 
 ## Walkthrough Video
-[NoSql Socal Network Walkthrough Video]()
+[NoSql Socal Network Walkthrough Video](https://drive.google.com/file/d/1dkToLcM3-xQGgE5w8JJKN5xmuNPc0JJt/view)
 
 ## Table of Contents
 
